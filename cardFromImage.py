@@ -5,7 +5,7 @@ from aqt import mw
 from aqt.qt import *
 from aqt.utils import tooltip
 
-from GetFolderDlg import Ui_PickFolderDlg  # This file holds our MainWindow and all design related things
+from folderDialog.GetFolderDlg  import Ui_PickFolderDlg  # This file holds our MainWindow and all design related things
 
 
 import os  # For listing directory methods

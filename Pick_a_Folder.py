@@ -2,7 +2,7 @@ from PyQt4 import QtGui  # Import the PyQt4 module we'll need
 from PyQt4.QtGui import QDialog
 import sys  # We need sys so that we can pass argv to QApplication
 
-from GetFolderDlg  import Ui_PickFolderDlg # This file holds our MainWindow and all design related things
+from folderDialog.GetFolderDlg  import Ui_PickFolderDlg # This file holds our MainWindow and all design related things
 
 # it also keeps events etc that we defined in Qt Designer
 import os
