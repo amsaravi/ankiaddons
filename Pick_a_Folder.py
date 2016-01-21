@@ -2,7 +2,9 @@ from PyQt4 import QtGui  # Import the PyQt4 module we'll need
 from PyQt4.QtGui import QDialog
 import sys  # We need sys so that we can pass argv to QApplication
 
-from folderDialog.GetFolderDlg  import Ui_PickFolderDlg # This file holds our MainWindow and all design related things
+from folderdialog.get_folder_dlg  import Ui_PickFolderDlg 
+
+# This file holds our MainWindow and all design related things
 
 # it also keeps events etc that we defined in Qt Designer
 import os
@@ -12,6 +14,9 @@ from os.path import isfile, join
 #from test.test_decimal import directory
 import uuid
 
+_CHECK_MOVE_FILES   = True
+_CHECL_RENAME_FILES = True
+
 class ExampleApp(Ui_PickFolderDlg):
     def __init__(self):
         Ui_PickFolderDlg.__init__(self)
@@ -20,7 +25,8 @@ class ExampleApp(Ui_PickFolderDlg):
         # It sets up layout and widgets that are defined
         self.txtDeckName.setText("Deafault")
         self.btnPickFolder.clicked.connect(self.browse_folder)  # When the button is pressed
-                                                            # Execute browse_folder function
+        self.chkMoveFiles.setChecked(_CHECK_MOVE_FILES)
+        self.chkRenameFiles.setChecked(_CHECL_RENAME_FILES)                                                   # Execute browse_folder function
 
     def browse_folder(self):
         #self.lstFolderContent.clear() # In case there are any existing elements in the list

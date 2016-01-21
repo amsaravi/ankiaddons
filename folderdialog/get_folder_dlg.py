@@ -61,7 +61,7 @@ class Ui_PickFolderDlg(QDialog):
         self.txtTagName.setObjectName("txtTagName")
         self.gridLayoutInputs.addWidget(self.txtTagName, 2, 1, 1, 2)
         self.chkMoveFiles = QtGui.QCheckBox(PickFolderDlg)
-        self.chkMoveFiles.setObjectName("chkMoveFiles")
+        self.chkMoveFiles.setObjectName("chkMoveFiles")        
         self.gridLayoutInputs.addWidget(self.chkMoveFiles, 3, 0, 1, 1)
         self.chkRenameFiles = QtGui.QCheckBox(PickFolderDlg)
         self.chkRenameFiles.setObjectName("chkRenameFiles")
@@ -103,8 +103,8 @@ class Ui_PickFolderDlg(QDialog):
         self.selectedFolder=self.txtFolderName.text()
         self.deckName=self.txtDeckName.text()
         self.tags=self.txtTagName.text()
-        self.moveFiles=self.chkMoveFiles.checkState()
-        self.renameFiles=self.chkRenameFiles.checkState()
+        self.moveFiles=self.chkMoveFiles.isChecked()
+        self.renameFiles=self.chkRenameFiles.isChecked()
         self.accept()
         
     def getData(self):

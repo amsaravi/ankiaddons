@@ -5,7 +5,7 @@ from aqt import mw
 from aqt.qt import *
 from aqt.utils import tooltip
 
-from folderDialog.GetFolderDlg  import Ui_PickFolderDlg  # This file holds our MainWindow and all design related things
+from folderdialog.get_folder_dlg  import Ui_PickFolderDlg   # This file holds our MainWindow and all design related things
 
 
 import os  # For listing directory methods
@@ -14,6 +14,9 @@ from os.path import isfile, join
 import shutil
 import uuid
 
+_CHECK_MOVE_FILES   = True
+_CHECL_RENAME_FILES = True
+
 class addonDialog(Ui_PickFolderDlg):
     def __init__(self):
         Ui_PickFolderDlg.__init__(self)
@@ -21,7 +24,8 @@ class addonDialog(Ui_PickFolderDlg):
         self.setupUi(self)  # This is defined in GetFolderDlg.py file automatically
         self.txtDeckName.setText("Deafault")
         self.btnPickFolder.clicked.connect(self.browse_folder)
-       
+        self.chkMoveFiles.setChecked(_CHECK_MOVE_FILES)
+        self.chkRenameFiles.setChecked(_CHECL_RENAME_FILES)
         # It sets up layout and widgets that are defined
         #self.btnPickFolder.clicked.connect(self.browse_folder)  # When the button is pressed
          # Execute browse_folder function
@@ -82,7 +86,7 @@ def import_images(directory,decName,tags,move, rename):
     <div><img src="{0}" /></div>
     """
     
-    for f, path in files.items():
+    for f, path in files:
         copy_move(*path)
         note = mw.col.newNote()
         note["Front"] = txt.format(f)
