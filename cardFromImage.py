@@ -55,7 +55,7 @@ def createNewName(f):
 
 def getFileNames(directory, f,newFileName):
     #combines file name with directory name
-    return join(directory, f), join(os.getcwd(),newFileName)
+    return join(directory, f), join(mw.col.media.folder(),newFileName)
   
 def import_images(directory,decName,tags,move, rename):
     #first of all, copy all images into anki's media directory
