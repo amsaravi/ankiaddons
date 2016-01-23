@@ -178,12 +178,12 @@ def add_QA_note(col, fname_q, fname_a, tags, fname_svg,
     m = col.models.byName(IMAGE_QA_MODEL_NAME)
     m['did'] = did
     n = notes.Note(col, model=m)
-    n.fields = [fname2img(fname_q),
-                fname2img(fname_a),
-                fname2img(fname_svg),
-                fname2img(fname_original),
-                header,
-                footer]
+    n["Question"]=fname2img(fname_q)
+    n["Footer"]=footer
+    n["Header"]=header
+    n["Original Image"]=fname2img(fname_original)
+    n["SVG"]=fname2img(fname_svg)
+
 
     for tag in tags:
         n.addTag(tag)
