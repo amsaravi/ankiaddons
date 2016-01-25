@@ -1,18 +1,21 @@
+
 # -*- coding: utf-8 -*-
-# Clickable_Tags add-on 0.1 alpha release- inspired by Dybamic_Tags add-on
-# The styles used here are from Power format pack add-on
-# Copyright: Abdolmahdi Saravi, 2013 <amsaravi@yahoo.com>
-# License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
-# This add-on Displays the Cards Tag in style of keyboard keys that has the 
-# ability to click on them witch opens the anki browser and lists the cards that match clicked tag.
-# You can change the style of tags by editing the code.
-# You can also use {{Tags}} in card template to position the tags on the card. by default if you don't use the
-# {{Tags}} in your Cards the add-on puts the tags before any content of the card. you can change this behavior
-# by setting the variable TAG_IN_ALL_CARDS to False
-# Also you can use this add-on as a global css injector. css styles that is defined here are visible on all note types
-
-# Good Luck
-
+"""
+Clickable_Tags add-on 0.1 alpha release- inspired by Dybamic_Tags add-on
+The styles used here are from Power format pack add-on
+Copyright: Abdolmahdi Saravi, 2013 <amsaravi@yahoo.com>
+License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
+This add-on Displays the Cards Tag in style of keyboard keys that has the 
+ability to click on them witch opens the anki browser and lists the cards that match clicked tag.
+You can change the style of tags by editing the code.
+You can also use {{Tags}} in card template to position the tags on the card. by default if you don't use the
+{{Tags}} in your Cards the add-on puts the tags before any content of the card. you can change this behavior
+by setting the variable TAG_IN_ALL_CARDS to False
+Also you can use this add-on as a global css injector. css styles that is defined here are visible on all note types
+if you Double Click on a tag within viewer the related Tags within current Deck will be showed
+Good Luck
+https://bitbucket.org/amsaravi/ankiaddons
+"""
 
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
@@ -51,6 +54,10 @@ def tagClicklinkHandler(reviewer, url):
         tag=url.split("tagclick_")[-1]
         browser=aqt.dialogs.open("Browser", mw)
         browser.setFilter("tag:%s" % tag)
+    elif url.startswith("_tagdblclick_"):
+        dec,tag=url.split("_tagdblclick_")[1:]
+        browser=aqt.dialogs.open("Browser", mw)       
+        browser.setFilter("tag:%s \"deck:%s\"" % (tag,dec))
     else:
         oldLinkHandler(reviewer, url)
         
@@ -61,8 +68,10 @@ def new_render(self, template=None, context=None, encoding=None):
     template = template or self.template
     context = context or self.context
     if context is not None:
+        dec=context['Deck']
         tags=context['Tags'].split()
-        tagStr="".join(["<kbd onclick='py.link(\"tagclick_%s\")'>%s</kbd>" % (tag, tag) for tag in tags])
+        tagStr="".join(["<kbd ondblclick='py.link(\"%s\")' onclick='py.link(\"tagclick_%s\")'>%s</kbd>"
+                         % ("_tagdblclick_%s_tagdblclick_%s" %(dec,tag), tag, tag) for tag in tags])
 
         template,n = re.subn(TAG_MARK, tagStr, template)
         if (not n) and (template.rfind(FRNT_SIDE)==-1) and (TAG_IN_ALL_CARDS):
