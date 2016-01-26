@@ -16,7 +16,7 @@ if you Double Click on a tag within viewer the related Tags within current Deck 
 Good Luck
 https://bitbucket.org/amsaravi/ankiaddons
 """
-
+from aqt import DialogManager  # we need it to fix the anki behavior not to deal with minimized state of window
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
 from aqt.utils import showInfo
@@ -25,8 +25,9 @@ import aqt
 from anki.cards import Card
 from anki.template import Template
 import re
+from aqt.qt import *
 
-kbd_css="""
+kbd_css = """
 kbd {
     box-shadow: inset 0px 1px 0px 0px #ffffff;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #e9e9e9) );
@@ -44,7 +45,7 @@ kbd {
     cursor: pointer; cursor: hand;
 }
 """
-java_script="""
+java_script = """
 <script type="text/javascript">
 var timer = 0;
 var delay = 200;
@@ -66,45 +67,63 @@ function dblclick_func(tags_deck) {
 
 </script>
 """
-TAG_MARK="{{Tags}}"
-FRNT_SIDE="{{FrontSide}}"
-TAG_IN_ALL_CARDS=True
-#TAG_IN_ALL_CARDS=False    #uncomment and put the fields in your cards manually
+TAG_MARK = "{{Tags}}"
+FRNT_SIDE = "{{FrontSide}}"
+TAG_IN_ALL_CARDS = True
+# TAG_IN_ALL_CARDS=False    #uncomment and put the fields in your cards manually
 
 def tagClicklinkHandler(reviewer, url):    
     if url.startswith("tagclick_"):
-        tag=url.split("tagclick_")[-1]
-        browser=aqt.dialogs.open("Browser", mw)
+        tag = url.split("tagclick_")[-1]
+        browser = aqt.dialogs.open("Browser", reviewer.mw)
         browser.setFilter("tag:%s" % tag)
+        
     elif url.startswith("_tagdblclick_"):
-        dec,tag=url.split("_tagdblclick_")[1:]
-        browser=aqt.dialogs.open("Browser", mw)       
-        browser.setFilter("tag:%s \"deck:%s\"" % (tag,dec))
+        dec, tag = url.split("_tagdblclick_")[1:]
+        browser = aqt.dialogs.open("Browser", reviewer.mw)       
+        browser.setFilter("tag:%s \"deck:%s\"" % (tag, dec))
+        browser.setWindowState(browser.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
     else:
         oldLinkHandler(reviewer, url)
         
 def new_css(card):
-    return old_css(card)+"<style>%s</style>" % kbd_css
+    return old_css(card) + "<style>%s</style>" % kbd_css
 
 def new_render(self, template=None, context=None, encoding=None):
     template = template or self.template
     context = context or self.context
     if context is not None:
-        dec=context['Deck']
-        tags=context['Tags'].split()
-        tagStr="".join(["<kbd ondblclick='dblclick_func(\"%s\")' onclick='click_func(\"tagclick_%s\")'>%s</kbd>"
-                         % ("_tagdblclick_%s_tagdblclick_%s" %(dec,tag), tag, tag) for tag in tags])
-        tagStr+=java_script
-        template,n = re.subn(TAG_MARK, tagStr, template)
-        if (not n) and (template.rfind(FRNT_SIDE)==-1) and (TAG_IN_ALL_CARDS):
-            template=tagStr+template    
+        dec = context['Deck']
+        tags = context['Tags'].split()
+        tagStr = "".join(["<kbd ondblclick='dblclick_func(\"%s\")' onclick='click_func(\"tagclick_%s\")'>%s</kbd>"
+                         % ("_tagdblclick_%s_tagdblclick_%s" % (dec, tag), tag, tag) for tag in tags])
+        tagStr += java_script
+        template, n = re.subn(TAG_MARK, tagStr, template)
+        if (not n) and (template.rfind(FRNT_SIDE) == -1) and (TAG_IN_ALL_CARDS):
+            template = tagStr + template    
     return old_render(self, template, context, encoding)
 
-oldLinkHandler=Reviewer._linkHandler
-Reviewer._linkHandler=tagClicklinkHandler
+"function to change anki behavior of opening  minimized windows that anki doesn't deals with it"
+def unminimize(dlgmngr, name, *args):
+    instance=old_open(dlgmngr,name, *args)
+    if instance:
+        instance.setWindowState(instance.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
+    return instance
 
-old_css=Card.css
-Card.css=new_css
+oldLinkHandler = Reviewer._linkHandler
+Reviewer._linkHandler = tagClicklinkHandler
 
-old_render=Template.render
-Template.render=new_render
+old_css = Card.css
+Card.css = new_css
+
+old_render = Template.render
+Template.render = new_render
+
+def unminimize(dlgmngr, name, *args):
+    instance=old_open(dlgmngr,name, *args)
+    if instance:
+        instance.setWindowState(instance.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
+    return instance
+
+old_open= DialogManager.open
+DialogManager.open =  unminimize

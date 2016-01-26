@@ -55,7 +55,7 @@ def addFields(fields, model, data, col):
     # test values ​​for non-real card
     class test:
         ivl, factor, lapses, type, reps, mod, due, odue, odid, queue = \
-        1, 2500, 1, 1, 1, 0, 0, 0, 0 ,0
+        1, 2500, 1, 1, 1, 0, 0, 0, 0 , 0
     # try to get the card data
     try: 
         val = col.getCard(data[0])
@@ -64,7 +64,7 @@ def addFields(fields, model, data, col):
         
     # Anki variable dynamic tags:
     fields['@interval'] = str(val.ivl)
-    fields['@factor'] = str(float(val.factor)/1000)
+    fields['@factor'] = str(float(val.factor) / 1000)
     fields['@lapses'] = str(val.lapses)
     fields['@type'] = str(val.type)
     fields['@reps'] = str(val.reps)
@@ -117,15 +117,15 @@ data[0])
        
 def _tags(data):
     "Presence indicator of the user-specified standard tags."
-    tags=set(data[5].split())
-    tagStr=["<kbd onclick='py.link(\"tagclick_%s\")'>%s</kbd>" % (tag, tag) for tag in tags]
+    tags = set(data[5].split())
+    tagStr = ["<kbd onclick='py.link(\"tagclick_%s\")'>%s</kbd>" % (tag, tag) for tag in tags]
     return "".join(tagStr)
 
        
 def _lifetime(data, col):
     "The Number of days elapsed since the first reviewing the card."
     item = col.db.scalar("select min(id) from revlog where cid = ?", data[0])
-    return round((time.time()-item/1000.0)/86400.0, 1) if item else 0
+    return round((time.time() - item / 1000.0) / 86400.0, 1) if item else 0
     
 def _tottime(data, col):
     "Total Number of minutes spent on reviewing the card."
@@ -153,7 +153,7 @@ where cid = ? and type = 1 order by id desc {0}) where ease = 1".format\
 (subst), data[0])
     item_t = col.db.scalar("select count(*) from (select * from revlog \
 where cid = ? and type = 1 order by id desc {0})".format(subst), data[0])
-    return round((item_t-item_n)*100.0/item_t, 1) if item_t else 0
+    return round((item_t - item_n) * 100.0 / item_t, 1) if item_t else 0
     
 def _anstime(data, col):
     "The average answer time to the card in the 'review' status."
@@ -165,18 +165,18 @@ def _revfreq(data, col, days=30):
     "The Number of reviews over the last 'days' days to the card in the \
 'review' status." 
     item = col.db.scalar("select count(*) from revlog where cid = ? \
-and type = 1 and id > {0}".format((time.time()-86400*days)*1000), data[0])
+and type = 1 and id > {0}".format((time.time() - 86400 * days) * 1000), data[0])
     return item if item else 0
 
 def _overdue(val, crt):
     "The overdue days for review cards and zero in other cases"
     due = val.odue if val.odid else val.due
-    overdays = int((time.time() - crt)//86400) - due
+    overdays = int((time.time() - crt) // 86400) - due
     return overdays if val.queue == 2 else 0
     
 def _birthday(cid):
     "The card creation date."
-    return time.strftime("%Y-%m-%d", time.localtime(cid/1000))
+    return time.strftime("%Y-%m-%d", time.localtime(cid / 1000))
         
     
 # Macros block:
@@ -202,7 +202,7 @@ def _hard_mac(factor, key=1.8):
     "Red exclamation mark in the upper right corner of the card with a low \
 (<'key') coefficient of ease."
     return '<div style="float:right;"><font color="red">&#33;</font>\
-</div>' if factor < key*1000 else ''
+</div>' if factor < key * 1000 else ''
 
 def _type_mac(type):
     "Lexical indicator of the card type."

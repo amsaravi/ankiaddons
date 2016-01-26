@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+﻿  # -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui
 from aqt import mw, utils, webview
@@ -31,7 +31,7 @@ svg_edit_path = os.path.join(svg_edit_dir,
 svg_edit_url = QtCore.QUrl.fromLocalFile(svg_edit_path)
 svg_edit_url_string = svg_edit_url.toString()
 
-#Add all configuration options we know at this point:
+# Add all configuration options we know at this point:
 svg_edit_url.setQueryItems([('initStroke[opacity]', '0'),
                             ('initStroke[width]', '0'),
                             ('initTool', 'rect'),
@@ -57,15 +57,15 @@ class ImageOcc_Add(QtCore.QObject):
         clip = QApplication.clipboard()
          
         theStr = self.ed.note.fields[self.ed.currentField]
-        patt=r"""<img.*?src=(["'])(.*?)\1"""
-        pattern = re.compile(patt, flags=re.I|re.M|re.S)    
+        patt = r"""<img.*?src=(["'])(.*?)\1"""
+        pattern = re.compile(patt, flags=re.I | re.M | re.S)    
         m = pattern.search(theStr)
-        valid_ext=False
-        imagename=""
+        valid_ext = False
+        imagename = ""
         if(m):
             imagename = m.group(2)
-            valid_ext = imagename.endswith((".jpg",".jpeg",".gif",".png"))
-            image_path=os.path.join(mw.col.media.dir(),m.group(2))
+            valid_ext = imagename.endswith((".jpg", ".jpeg", ".gif", ".png"))
+            image_path = os.path.join(mw.col.media.dir(), m.group(2))
         
         if(valid_ext and os.path.isfile(image_path)):
             pass
@@ -178,19 +178,19 @@ class ImageOcc_Editor(QWidget):
 
     def initUI(self, tags):
         ##############################################
-        ### From top to bottom:
+        # ## From top to bottom:
         ##############################################
-        ## header_label # self.header_edit
+        # # header_label # self.header_edit
         ##############################################
-        ## self.svg_edit
+        # # self.svg_edit
         ##############################################
-        ## footer_label # self.footer
+        # # footer_label # self.footer
         ##############################################
-        ## tags_label # self.tags_edit
+        # # tags_label # self.tags_edit
         ##############################################
-        ## deck_container
+        # # deck_container
         ##  ########################
-        ##  # deckChooser          #
+        # #  # deckChooser          #
         ##  ########################
         ##############################################
 
@@ -272,7 +272,7 @@ class ImageOcc_Options(QtGui.QWidget):
 
     def setupUi(self):
 
-        ### Mask color for questions:
+        # ## Mask color for questions:
         mask_color_label = QLabel('<b>Mask color</b><br>in question')
 
         mask_color_button = QPushButton(u"Choose Color ▾")
@@ -280,7 +280,7 @@ class ImageOcc_Options(QtGui.QWidget):
         mask_color_button.connect(mask_color_button,
                                   SIGNAL("clicked()"),
                                   self.getNewMaskColor)
-        ### Initial rectangle color:
+        # ## Initial rectangle color:
         initFill_label = QLabel('<b>Initial color</b><br>for rectangle')
 
         initFill_button = QPushButton(u"Choose Color ▾")

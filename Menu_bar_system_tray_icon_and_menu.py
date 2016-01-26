@@ -29,15 +29,15 @@ def showCardAdder():
         if instance.isActiveWindow():
             return
         if instance.editor.fieldsAreBlank():
-            #closing an existing empty editor
-            instance.close() #it's safe, I've already checked the fields
+            # closing an existing empty editor
+            instance.close()  # it's safe, I've already checked the fields
             aqt.dialogs.close("AddCards")
-    #The second "open" I run raises the add card window even if the main one isn't
+    # The second "open" I run raises the add card window even if the main one isn't
     aqt.mw.onAddCard()
     aqt.dialogs.open("AddCards", aqt.mw)
 
 def click_trap(value):
-    if value == QSystemTrayIcon.Trigger: #left click!
+    if value == QSystemTrayIcon.Trigger:  # left click!
         aqt.mw.app.emit(QtCore.SIGNAL("appMsg"), "raise")
         aqt.mw.showNormal()
         aqt.mw.activateWindow()
@@ -74,7 +74,7 @@ def createSysTray():
 
 
 addHook("profileLoaded", createSysTray)
-#aqt.editor.Editor.setupFields = wrap (aqt.editor.Editor.setupButtons, addXournalButton, "after")
-#def raiseWindow(self):
+# aqt.editor.Editor.setupFields = wrap (aqt.editor.Editor.setupButtons, addXournalButton, "after")
+# def raiseWindow(self):
 #    aqt.mw.app.emit(QtCore.SIGNAL("appMsg"), "raise")
-#addNewAction.triggered.connect(lambda: aqt.dialogs.open("AddCards", self))
+# addNewAction.triggered.connect(lambda: aqt.dialogs.open("AddCards", self))

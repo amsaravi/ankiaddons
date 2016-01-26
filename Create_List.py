@@ -46,7 +46,7 @@ def setupButtons(self):
                     text=u"Clr", tip="List (Ctrl+Shift+c)", key="Ctrl+Shift+c")
 
 Editor.toggleList = toggleList
-Editor.toggleBullet=toggleBullet
-Editor.togglefarsi=togglefarsi
-Editor.clearboth=clearboth
+Editor.toggleBullet = toggleBullet
+Editor.togglefarsi = togglefarsi
+Editor.clearboth = clearboth
 Editor.setupButtons = wrap(Editor.setupButtons, setupButtons)

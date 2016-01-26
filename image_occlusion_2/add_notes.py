@@ -145,11 +145,11 @@ def new_bnames(col, media_dir, original_fname):
     # there is no nead to copy it again
     original_file_base_name = os.path.basename(original_fname)    
     orig_file_path = os.path.dirname(original_fname)
-    if not orig_file_path==col.media.dir():       
+    if not orig_file_path == col.media.dir():       
         shutil.copy(original_fname,
                     os.path.join(media_dir, original_file_base_name))
     else:
-        d[original_file_base_name]=original_file_base_name
+        d[original_file_base_name] = original_file_base_name
 
     uniq_prefix = gen_uniq() + "_"
 
@@ -178,11 +178,11 @@ def add_QA_note(col, fname_q, fname_a, tags, fname_svg,
     m = col.models.byName(IMAGE_QA_MODEL_NAME)
     m['did'] = did
     n = notes.Note(col, model=m)
-    n["Question"]=fname2img(fname_q)
-    n["Footer"]=footer
-    n["Header"]=header
-    n["Original Image"]=fname2img(fname_original)
-    n["SVG"]=fname2img(fname_svg)
+    n["Question"] = fname2img(fname_q)
+    n["Footer"] = footer
+    n["Header"] = header
+    n["Original Image"] = fname2img(fname_original)
+    n["SVG"] = fname2img(fname_svg)
 
 
     for tag in tags:

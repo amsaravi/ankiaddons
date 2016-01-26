@@ -13,11 +13,11 @@ class Ui_PickFolderDlg(QDialog):
     
     def __init__(self):
         QDialog.__init__(self)
-        self.selectedFolder=""
-        self.deckName=""
-        self.tags=""
-        self.moveFiles=False
-        self.renameFiles=False
+        self.selectedFolder = ""
+        self.deckName = ""
+        self.tags = ""
+        self.moveFiles = False
+        self.renameFiles = False
         
     def setupUi(self, PickFolderDlg):
         PickFolderDlg.setObjectName("PickFolderDlg")
@@ -79,7 +79,7 @@ class Ui_PickFolderDlg(QDialog):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.btnbxDialogButtons.sizePolicy().hasHeightForWidth())
         self.btnbxDialogButtons.setSizePolicy(sizePolicy)
-        self.btnbxDialogButtons.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.btnbxDialogButtons.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.btnbxDialogButtons.setObjectName("btnbxDialogButtons")
         self.gridLayout.addWidget(self.btnbxDialogButtons, 1, 0, 1, 1)
 
@@ -100,12 +100,12 @@ class Ui_PickFolderDlg(QDialog):
         self.chkRenameFiles.setText("Rename Files")
         
     def importSelected(self):
-        self.selectedFolder=self.txtFolderName.text()
-        self.deckName=self.txtDeckName.text()
-        self.tags=self.txtTagName.text()
-        self.moveFiles=self.chkMoveFiles.isChecked()
-        self.renameFiles=self.chkRenameFiles.isChecked()
+        self.selectedFolder = self.txtFolderName.text()
+        self.deckName = self.txtDeckName.text()
+        self.tags = self.txtTagName.text()
+        self.moveFiles = self.chkMoveFiles.isChecked()
+        self.renameFiles = self.chkRenameFiles.isChecked()
         self.accept()
         
     def getData(self):
-        return (self.selectedFolder,self.deckName, self.tags,self.moveFiles, self.renameFiles)
+        return (self.selectedFolder, self.deckName, self.tags, self.moveFiles, self.renameFiles)
