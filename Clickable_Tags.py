@@ -44,6 +44,28 @@ kbd {
     cursor: pointer; cursor: hand;
 }
 """
+java_script="""
+<script type="text/javascript">
+var timer = 0;
+var delay = 200;
+var prevent = false;
+function click_func(tags) {
+    timer = setTimeout(function() {
+        if (!prevent) {
+            py.link(tags);
+        }
+        prevent = false;
+    }, delay);
+}
+
+function dblclick_func(tags_deck) {
+    clearTimeout(timer);
+    prevent = true;
+    py.link(tags_deck);
+}
+
+</script>
+"""
 TAG_MARK="{{Tags}}"
 FRNT_SIDE="{{FrontSide}}"
 TAG_IN_ALL_CARDS=True
@@ -70,9 +92,9 @@ def new_render(self, template=None, context=None, encoding=None):
     if context is not None:
         dec=context['Deck']
         tags=context['Tags'].split()
-        tagStr="".join(["<kbd ondblclick='py.link(\"%s\")' onclick='py.link(\"tagclick_%s\")'>%s</kbd>"
+        tagStr="".join(["<kbd ondblclick='dblclick_func(\"%s\")' onclick='click_func(\"tagclick_%s\")'>%s</kbd>"
                          % ("_tagdblclick_%s_tagdblclick_%s" %(dec,tag), tag, tag) for tag in tags])
-
+        tagStr+=java_script
         template,n = re.subn(TAG_MARK, tagStr, template)
         if (not n) and (template.rfind(FRNT_SIDE)==-1) and (TAG_IN_ALL_CARDS):
             template=tagStr+template    
