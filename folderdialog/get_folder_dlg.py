@@ -8,6 +8,8 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QDialog
+from aqt import tagedit
+from aqt import mw
 
 class Ui_PickFolderDlg(QDialog):
     
@@ -56,9 +58,10 @@ class Ui_PickFolderDlg(QDialog):
         self.gridLayoutInputs.addWidget(self.txtDeckName, 1, 1, 1, 2)
         self.lblTagName = QtGui.QLabel(PickFolderDlg)
         self.lblTagName.setObjectName("lblTagName")
-        self.gridLayoutInputs.addWidget(self.lblTagName, 2, 0, 1, 1)
-        self.txtTagName = QtGui.QLineEdit(PickFolderDlg)
-        self.txtTagName.setObjectName("txtTagName")
+        self.gridLayoutInputs.addWidget(self.lblTagName, 2, 0, 1, 1)        
+        self.txtTagName = tagedit.TagEdit(self)
+        self.txtTagName.setText("")
+        self.txtTagName.setCol(mw.col)        
         self.gridLayoutInputs.addWidget(self.txtTagName, 2, 1, 1, 2)
         self.chkMoveFiles = QtGui.QCheckBox(PickFolderDlg)
         self.chkMoveFiles.setObjectName("chkMoveFiles")        
