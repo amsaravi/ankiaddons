@@ -59,7 +59,11 @@ tag_dialog_shortcut = 't'
 ##    'A': {'tags': 'easy', 'after': 'suspend-note'}
 
 tag_shortcuts = {
+    '5': {'tags': 'Conflict', 'action': 'toggle'},
+    '.': {'tags': '',  'after': 'bury'},
+    'm': {'tags': 'marked',  'action': 'toggle'}
 #    'H': {'tags': 'hard', 'action': 'toggle'},
+#    '0': {'tags': 'Hard', 'action': 'add'},
 #    'T': {'tags': 'TODO', 'after': 'bury-note'},
 #    'A': {'tags': 'easy', 'after': 'suspend-card'},
 }
@@ -99,8 +103,10 @@ def tagKeyHandler(self, event, _old):
     """Wrap default _keyHandler with new keybindings."""
     key = unicode(event.text())
     note = mw.reviewer.card.note()
-    if tag_dialog_shortcut and key == tag_dialog_shortcut:
+    if tag_dialog_shortcut and key in tag_dialog_shortcut:
         mw.checkpoint(_("Edit Tags"))
+        import win32api
+        win32api.LoadKeyboardLayout('00000409',1) # to switch to english
         edit_tag_dialog(note)
     elif key in tag_shortcuts:
         binding = tag_shortcuts[key]
@@ -128,9 +134,11 @@ def tagKeyHandler(self, event, _old):
         else:
             mw.checkpoint(_("edit Tags"))
             tooltip_message = 'Edited tags: {}'
-
-        tag_edits = edit_note_tags(note, binding['tags'], binding['action'])
-        redraw_card()
+        if 'after' in binding:
+            mw.reset()
+        else:
+            redraw_card()
+        tag_edits = edit_note_tags(note, binding['tags'], binding['action'])        
         tooltip(tooltip_message.format(tag_edits))
     else:
         _old(self, event)
@@ -145,7 +153,6 @@ def edit_tag_dialog(note):
         note.flush()
         redraw_card()
         tooltip('Tags set to: "{}"'.format(tag_string))
-
 
 def redraw_card():
     """Refresh the card in case {{Tags}} is in the template."""
