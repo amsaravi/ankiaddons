@@ -134,11 +134,11 @@ def tagKeyHandler(self, event, _old):
         else:
             mw.checkpoint(_("edit Tags"))
             tooltip_message = 'Edited tags: {}'
+        tag_edits = edit_note_tags(note, binding['tags'], binding['action'])   
         if 'after' in binding:
             mw.reset()
         else:
             redraw_card()
-        tag_edits = edit_note_tags(note, binding['tags'], binding['action'])        
         tooltip(tooltip_message.format(tag_edits))
     else:
         _old(self, event)
