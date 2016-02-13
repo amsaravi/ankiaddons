@@ -1,4 +1,4 @@
-﻿  # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui
 from aqt import mw, utils, webview
@@ -6,7 +6,7 @@ from aqt.qt import *
 from anki import hooks
 from aqt import deckchooser
 from aqt import tagedit
-
+from aqt.utils import showInfo
 import os
 import tempfile
 import re
@@ -31,7 +31,7 @@ svg_edit_path = os.path.join(svg_edit_dir,
 svg_edit_url = QtCore.QUrl.fromLocalFile(svg_edit_path)
 svg_edit_url_string = svg_edit_url.toString()
 
-# Add all configuration options we know at this point:
+#Add all configuration options we know at this point:
 svg_edit_url.setQueryItems([('initStroke[opacity]', '0'),
                             ('initStroke[width]', '0'),
                             ('initTool', 'rect'),
@@ -53,19 +53,42 @@ class ImageOcc_Add(QtCore.QObject):
             # If addon has never been run
             self.mw.col.conf['image_occlusion_conf'] = default_conf
 
-    def add_notes(self):
+    def add_notes(self, fldName=None):
+       
+        if fldName is None:
+            fldName = self.ed.currentField
+            theStr = self.ed.note.fields[fldName]
+            tags=self.ed.note.tags
+        else:
+            theStr = self.ed.card.note()[fldName]
+            tags=self.ed.card.note().tags            
+        
+        try:
+            c=self.ed.card
+            did= c.did if not c.odid else c.odid           
+        except:    
+            did = self.mw.col.conf['curDeck']
+            if self.mw.col.decks.isDyn(did):
+                # if they're reviewing, try default to current card
+                c = self.mw.reviewer.card
+                if self.mw.state == "review" and c:
+                    did= c.did if not c.odid else c.odid
+                else:
+                    did = 1
+        
+        deck_name= mw.col.decks.name(did)
+        
         clip = QApplication.clipboard()
-         
-        theStr = self.ed.note.fields[self.ed.currentField]
-        patt = r"""<img.*?src=(["'])(.*?)\1"""
-        pattern = re.compile(patt, flags=re.I | re.M | re.S)    
+                 
+        patt=r"""<img.*?src=(["'])(.*?)\1"""
+        pattern = re.compile(patt, flags=re.I|re.M|re.S)    
         m = pattern.search(theStr)
-        valid_ext = False
-        imagename = ""
+        valid_ext=False
+        imagename=""
         if(m):
             imagename = m.group(2)
-            valid_ext = imagename.endswith((".jpg", ".jpeg", ".gif", ".png"))
-            image_path = os.path.join(mw.col.media.dir(), m.group(2))
+            valid_ext = imagename.endswith((".jpg",".jpeg",".gif",".png"))
+            image_path=os.path.join(mw.col.media.dir(),m.group(2))
         
         if(valid_ext and os.path.isfile(image_path)):
             pass
@@ -78,7 +101,7 @@ class ImageOcc_Add(QtCore.QObject):
             #  Simple hack to catch an error. I still don't know
             # the cause of the error.
             try:
-                self.call_ImageOcc_Editor(self.mw.image_occlusion2_image_path)
+                self.call_ImageOcc_Editor(self.mw.image_occlusion2_image_path, deck_name, tags)
             except:
                 image_path = QtGui.QFileDialog.getOpenFileName(None,  # parent
                                                       FILE_DIALOG_MESSAGE,
@@ -94,9 +117,9 @@ class ImageOcc_Add(QtCore.QObject):
         # The following code is common to both branches of the 'if'
         if image_path:
             self.mw.image_occlusion2_image_path = image_path
-            self.call_ImageOcc_Editor(self.mw.image_occlusion2_image_path)
+            self.call_ImageOcc_Editor(self.mw.image_occlusion2_image_path, deck_name, tags)
 
-    def call_ImageOcc_Editor(self, path):
+    def call_ImageOcc_Editor(self, path, deck_name, tags):
         d = svgutils.image2svg(path)
         svg = d['svg']
         svg_b64 = d['svg_b64']
@@ -111,7 +134,12 @@ class ImageOcc_Add(QtCore.QObject):
 
             command = select_rect_tool + set_svg_content + set_canvas
 
+            mw.ImageOcc_Editor.setDefaults(tags,deck_name)
             mw.ImageOcc_Editor.svg_edit.eval(command)
+            mw.ImageOcc_Editor.svg_edit.\
+                   page().\
+                   mainFrame().\
+                   addToJavaScriptWindowObject("pyObj", self)
             mw.ImageOcc_Editor.show()
 
         except:
@@ -120,9 +148,8 @@ class ImageOcc_Add(QtCore.QObject):
             url.addQueryItem('initFill[color]', initFill_color)
             url.addQueryItem('dimensions', '{0},{1}'.format(width, height))
             url.addQueryItem('source', svg_b64)
-
-            tags = self.ed.note.tags
-            mw.ImageOcc_Editor = ImageOcc_Editor(tags)
+            
+            mw.ImageOcc_Editor = ImageOcc_Editor(tags,deck_name)
 
             mw.ImageOcc_Editor.svg_edit.\
                                page().\
@@ -172,25 +199,30 @@ def add_image_occlusion_button(ed):
 
 
 class ImageOcc_Editor(QWidget):
-    def __init__(self, tags):
+    def __init__(self, tags, deck_name):
         super(ImageOcc_Editor, self).__init__()
-        self.initUI(tags)
+        self.initUI(tags, deck_name)
 
-    def initUI(self, tags):
+    def setDefaults(self, tags, deck_name):
+        self.tags_edit.setText(" ".join(tags))
+        self.header_edit.setText("")
+        self.deckChooser.deck.setText(deck_name)
+
+    def initUI(self, tags, deck_name):
         ##############################################
-        # ## From top to bottom:
+        ### From top to bottom:
         ##############################################
-        # # header_label # self.header_edit
+        ## header_label # self.header_edit
         ##############################################
-        # # self.svg_edit
+        ## self.svg_edit
         ##############################################
-        # # footer_label # self.footer
+        ## footer_label # self.footer
         ##############################################
-        # # tags_label # self.tags_edit
+        ## tags_label # self.tags_edit
         ##############################################
-        # # deck_container
+        ## deck_container
         ##  ########################
-        # #  # deckChooser          #
+        ##  # deckChooser          #
         ##  ########################
         ##############################################
 
@@ -218,7 +250,7 @@ class ImageOcc_Editor(QWidget):
 
         # Tags
         self.tags_edit = tagedit.TagEdit(self)
-        self.tags_edit.setText(" ".join(tags))
+        #self.tags_edit.setText(" ".join(tags))
         self.tags_edit.setCol(mw.col)
         tags_label = QLabel("Tags: ")
 
@@ -229,8 +261,7 @@ class ImageOcc_Editor(QWidget):
         deck_container = QGroupBox("Deck")
 
         self.deckChooser = deckchooser.DeckChooser(mw, deck_container,
-                                                   label=False)
-
+                                                   label=False)        
         vbox = QVBoxLayout()
         vbox.addLayout(header_hbox)
         vbox.addWidget(self.svg_edit, stretch=1)
@@ -244,7 +275,7 @@ class ImageOcc_Editor(QWidget):
         #  When the focus is on the tags an ugly autocomplete
         # list appears, taking away screen real estate for no reason.
         self.header_edit.setFocus()
-
+        self.setDefaults(tags, deck_name)
         self.setWindowTitle('Image Occlusion Editor')
         self.show()
 
@@ -272,7 +303,7 @@ class ImageOcc_Options(QtGui.QWidget):
 
     def setupUi(self):
 
-        # ## Mask color for questions:
+        ### Mask color for questions:
         mask_color_label = QLabel('<b>Mask color</b><br>in question')
 
         mask_color_button = QPushButton(u"Choose Color ▾")
@@ -280,7 +311,7 @@ class ImageOcc_Options(QtGui.QWidget):
         mask_color_button.connect(mask_color_button,
                                   SIGNAL("clicked()"),
                                   self.getNewMaskColor)
-        # ## Initial rectangle color:
+        ### Initial rectangle color:
         initFill_label = QLabel('<b>Initial color</b><br>for rectangle')
 
         initFill_button = QPushButton(u"Choose Color ▾")
