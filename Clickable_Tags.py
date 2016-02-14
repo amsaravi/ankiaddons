@@ -72,7 +72,9 @@ FRNT_SIDE = "{{FrontSide}}"
 TAG_IN_ALL_CARDS = True
 # TAG_IN_ALL_CARDS=False    #uncomment and put the fields in your cards manually
 
-def tagClicklinkHandler(reviewer, url):    
+def tagClicklinkHandler(reviewer, url, isPreview=False):   
+    if isPreview:
+        pass    #the function called from preview form 
     if url.startswith("tagclick_"):
         tag = url.split("tagclick_")[-1]
         browser = aqt.dialogs.open("Browser", reviewer.mw)
@@ -128,10 +130,8 @@ def unminimize(dlgmngr, name, *args):
 old_open= DialogManager.open
 DialogManager.open =  unminimize
 
-def new_renderPreview(self, cardChanged=False,_old=None):    
-    _old(self,cardChanged)
+def new_renderPreview(self, cardChanged=False):    
     if self._previewWindow:
-        self._previewWeb._linkHandler=lambda url: tagClicklinkHandler(self,url)
-        self._previewWeb.setLinkHandler(self._previewWeb._linkHandler)
+        self._previewWeb.setLinkHandler(lambda url: tagClicklinkHandler(self,url, True))
 
-Browser._renderPreview=wrap(Browser._renderPreview, new_renderPreview, "around")
+Browser._renderPreview=wrap(Browser._renderPreview, new_renderPreview, "before")
