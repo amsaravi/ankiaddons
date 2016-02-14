@@ -26,7 +26,7 @@ from anki.cards import Card
 from anki.template import Template
 import re
 from aqt.qt import *
-
+from aqt.browser import Browser
 kbd_css = """
 kbd {
     box-shadow: inset 0px 1px 0px 0px #ffffff;
@@ -127,3 +127,11 @@ def unminimize(dlgmngr, name, *args):
 
 old_open= DialogManager.open
 DialogManager.open =  unminimize
+
+def new_renderPreview(self, cardChanged=False,_old=None):    
+    _old(self,cardChanged)
+    if self._previewWindow:
+        self._previewWeb._linkHandler=lambda url: tagClicklinkHandler(self,url)
+        self._previewWeb.setLinkHandler(self._previewWeb._linkHandler)
+
+Browser._renderPreview=wrap(Browser._renderPreview, new_renderPreview, "around")
